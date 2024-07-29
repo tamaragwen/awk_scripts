@@ -1,0 +1,7 @@
+L	NUM	WORD	NUM2	VAR		NUM3
+E	200	banana	462	l=aa;q=aa       566	
+E	206	orange	362	l=ab;q=bb  	732
+E	201	peach	252	l=ac;q=cc  	222
+W	200	banana	182	l=ad;q=dd  	988
+W	206	orange	792	l=ae;q=de  	231
+W	201	peach	502	l=af;q=ff  	342
