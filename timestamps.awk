@@ -1,56 +1,46 @@
 #!/opt/homebrew/bin/gawk -f
 # Create mini statistics using multi-dimensional array
 
-
 BEGIN	{;
-		fmt_string = "%-10s\t% 10s\t% 8s% 9s\t% 8s\t% 8s\n";
-		fmt_string2 = "% 38s\t% 8s\t% 8s\t%8.2f\n";
-		printf ("\n\n%s\n", "Calculate some statistics based on date, via unix timestamps");
-		printf (fmt_string, "Day", "Monster", "Temp1/2", "Count", "Sum", "Avg")
+		fmt_string = "%-10s\t% 10s\t% 9s\t% 8s\t% 8s\n";
+		fmt_string2 = "% 28s\t% 8s\t% 8s\t%8.2f\n";
+		printf ("%s\n", "Calculate some statistics based on date, via unix timestamps");
+		printf (fmt_string, "Day", "Monster", "Count", "Sum", "Avg")
 	}
-
 
 #RUN THRU
-{;
-	if (NR > 1) { 
-		day = strftime("%Y-%m-%d", $2);
-		# day = substr($2, 2, 10)
-		split($5, field5, ":");
-		monster = field5[1];
-		temp1 = $6;
-		temp2 = $7;
-
-		days[day] += 1;
-		monsters[monster] += 1;
-		data[day, monster, "temp1", "sum"] += temp1;
-		data[day, monster, "temp1", "count"] += 1;
-		data[day, monster, "temp2", "sum"] += temp2;
-		data[day, monster, "temp2", "count"] += 1;
+	{	if (NR > 1) {;
+			if ( $2 ~ /.*\-.*/ ) {; 
+				date = substr($2, 2, 10)
+				split($4, junky, ":");
+				monster = junky[1];
+			} else { ;
+				date = strftime("%Y-%m-%d", $2);
+				split($3, junky, ":");
+				monster = junky[1];
+			};
+			temp = $NF;
+			days[date] += 1;
+			monsters[monster] += 1;
+			data[date, monster, "sum"] += temp;
+			data[date, monster, "count"] += 1;
+		}
 	}
 	
-}
-
 END {;	
 	for (day in days) {;
 		print day;
 		for (monster in monsters) {;
-			printf("% 26s\n", monster)
-			count1 = data[day, monster, "temp1", "count"];
-			sum1 = data[day, monster, "temp1", "sum"];
-			count2 = data[day, monster, "temp2", "count"];
-			sum2 = data[day, monster, "temp2", "sum"];
-			if (count1 == 0) {;
-				count1 = "--";
-				sum1 = "--";
-				avg1 = "--"
-			} else { avg1 = sum1 / count1 };
-			if (count2 == 0) {;
-				count2 = "--";
-				sum2 = "--";
-				avg2 = "--"
-			} else {avg2 = sum2 / count2};
-			printf(fmt_string2, "Temp1", count1, sum1, avg1);
-			printf(fmt_string2, "Temp2", count2, sum2, avg2)
+			sum = data[date, monster, "sum"];
+			count = data[date, monster, "count"];
+			if (count == 0) {;
+				avg = "--";
+				sum = "--"
+			} else {;
+				avg = sum/count
+			};
+			printf (fmt_string2, monster, count, sum, avg)
+			
 		}
 	}
 }
